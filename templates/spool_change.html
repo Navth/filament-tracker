@@ -5,9 +5,13 @@
 {% if current %}
 <div class="card">
   <h2>Current spool (will be archived)</h2>
-  <span class="dot" style="background:{{ current['color'] or '#666' }}"></span>
-  <b>{{ current['material'] }}</b>{% if current['brand'] %} · {{ current['brand'] }}{% endif %}
-  — {{ stats.remaining }} g left of {{ current['initial_g'] }} g ({{ stats.used }} g used, {{ stats.prints }} prints)
+  <div class="spool-line">
+    <span class="dot" style="background:{{ current['color'] or '#666' }}"></span>
+    <b>{{ current['material'] }}</b>
+    {% if current['brand'] %}<span class="tag">{{ current['brand'] }}</span>{% endif %}
+    <span class="mut">{{ stats.remaining }} g left of {{ current['initial_g']|int }} g · {{ stats.used }} g used · {{ stats.prints }} print{{ 's' if stats.prints != 1 }}</span>
+  </div>
+  <div class="bar" style="max-width:340px"><i class="{{ 'bad' if stats.pct < 10 else 'warn' if stats.pct < 25 }}" style="width:{{ stats.pct }}%"></i></div>
 </div>
 {% endif %}
 
@@ -27,7 +31,7 @@
       <div><label>Brand</label><input name="brand" placeholder="Bambu, Sunlu, eSun…"></div>
     </div>
     <label>Note (optional)</label><input name="note" placeholder="batch, purchase date…">
-    <div style="margin-top:14px">
+    <div class="actions">
       <button>Load spool & reset counter</button>
       <a class="btn ghost" href="{{ url_for('dashboard') }}">Cancel</a>
     </div>

@@ -4,49 +4,126 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Filament Tracker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧵</text></svg>">
 <style>
-:root{--bg:#12141a;--card:#1c2030;--ink:#e8eaf2;--mut:#8b91a7;--acc:#37c66b;--warn:#e0a63a;--bad:#e05555;--line:#2a2f45}
+:root{
+  --bg:#0d0f16;--bg2:#12151f;--card:#171b28;--card2:#1d2233;
+  --ink:#e9ecf5;--mut:#8f96ad;--faint:#5c6378;
+  --acc:#3ddc84;--acc-ink:#0a1f12;--blue:#5b8cff;--warn:#e8b339;--bad:#ef6161;
+  --line:#262c42;--line2:#303852;--r:14px;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif}
-nav{display:flex;gap:4px;align-items:center;padding:10px 20px;background:var(--card);border-bottom:1px solid var(--line)}
-nav .brand{font-weight:700;margin-right:16px;color:var(--acc)}
-nav a{color:var(--mut);text-decoration:none;padding:6px 12px;border-radius:8px}
-nav a:hover,nav a.on{color:var(--ink);background:var(--bg)}
-main{max-width:960px;margin:24px auto;padding:0 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
-h1{font-size:22px;margin:0 0 14px}h2{font-size:17px;margin:0 0 10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.bar{height:10px;background:var(--bg);border-radius:6px;overflow:hidden;margin:8px 0}
-.bar i{display:block;height:100%;background:var(--acc)}
-.bar i.warn{background:var(--warn)}.bar i.bad{background:var(--bad)}
+html{scrollbar-color:var(--line2) transparent}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#1a2038 0%,var(--bg) 55%);
+  color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:10;display:flex;gap:2px;align-items:center;
+  padding:10px 22px;background:color-mix(in srgb,var(--bg2) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .brand{font-weight:800;font-size:16px;margin-right:20px;letter-spacing:.2px}
+nav .brand em{color:var(--acc);font-style:normal}
+nav a{color:var(--mut);text-decoration:none;padding:7px 13px;border-radius:9px;font-weight:500;transition:.15s}
+nav a:hover{color:var(--ink);background:var(--card)}
+nav a.on{color:var(--ink);background:var(--card);box-shadow:inset 0 -2px 0 var(--acc)}
+
+main{max-width:1020px;margin:28px auto 60px;padding:0 18px}
+
+/* ---------- typography ---------- */
+h1{font-size:24px;font-weight:750;margin:0 0 18px;letter-spacing:-.3px}
+h2{font-size:15px;font-weight:650;margin:0 0 12px;color:var(--mut);
+  text-transform:uppercase;letter-spacing:.8px}
 .mut{color:var(--mut);font-size:13px}
-.big{font-size:26px;font-weight:700}
+.faint{color:var(--faint)}
+.big{font-size:28px;font-weight:750;letter-spacing:-.5px}
+.big small{font-size:14px;font-weight:450;color:var(--mut)}
+
+/* ---------- cards ---------- */
+.card{background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-bottom:18px}
+.grid .card{margin:0}
+
+/* ---------- slot card / donut ---------- */
+.slot-card{display:flex;gap:18px;align-items:center}
+.donut{--p:0;--c:var(--acc);flex:none;width:118px;aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(var(--c) calc(var(--p)*1%),#242a41 0);display:grid;place-items:center;
+  box-shadow:inset 0 0 0 1px var(--line2)}
+.donut.low{--c:var(--bad)}
+.donut.mid{--c:var(--warn)}
+.donut-in{width:76%;aspect-ratio:1;border-radius:50%;background:var(--card);
+  display:grid;place-items:center;text-align:center;line-height:1.15;
+  box-shadow:0 0 0 1px var(--line)}
+.donut-in b{font-size:22px}
+.donut-in span{font-size:11px;color:var(--mut)}
+.slot-info{min-width:0;flex:1}
+.spool-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+
+/* ---------- bars, dots, chips ---------- */
+.bar{height:8px;background:#232941;border-radius:5px;overflow:hidden;margin:9px 0 7px}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--acc);transition:width .4s}
+.bar i.warn{background:var(--warn)}.bar i.bad{background:var(--bad)}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.18);vertical-align:-2px;margin-right:2px;flex:none}
+.tag{font-size:12px;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;
+  padding:2px 10px;color:var(--mut);white-space:nowrap}
+.tag.ok{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 35%,var(--line2))}
+.tag.warn{color:var(--warn)}
+
+/* ---------- tables ---------- */
+.tbl{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
-th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase}
-button,.btn{background:var(--acc);color:#0c1a10;border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;font-size:14px}
-button.ghost,.btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
-button.mini{padding:3px 8px;font-size:12px}
-input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;width:100%}
-label{display:block;margin:10px 0 4px;font-size:13px;color:var(--mut)}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.7px}
+tbody tr,tr.row-h{transition:.12s}
+table tr:hover td{background:rgba(255,255,255,.02)}
+td .mut{font-size:13px}
+.num{font-variant-numeric:tabular-nums;font-weight:600}
+
+/* ---------- buttons & forms ---------- */
+button,.btn{background:var(--acc);color:var(--acc-ink);border:0;border-radius:10px;
+  padding:9px 16px;font-weight:650;font-size:14px;cursor:pointer;text-decoration:none;
+  display:inline-block;transition:.15s;font-family:inherit}
+button:hover,.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+button.ghost,.btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line2)}
+button.ghost:hover,.btn.ghost:hover{color:var(--ink);border-color:var(--faint)}
+button.mini{padding:4px 10px;font-size:12px;border-radius:8px}
+input,select{background:var(--bg2);color:var(--ink);border:1px solid var(--line2);
+  border-radius:10px;padding:9px 12px;font-size:14px;width:100%;font-family:inherit;transition:.15s}
+input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(61,220,132,.15)}
+input[type=color]{padding:4px;height:40px;cursor:pointer}
+label{display:block;margin:12px 0 5px;font-size:12.5px;color:var(--mut);font-weight:550}
 form.inline{display:inline}
-.flash{background:#22314a;border:1px solid #3a537d;border-radius:8px;padding:10px 14px;margin-bottom:14px}
-.dot{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid var(--line);vertical-align:-1px;margin-right:5px}
-.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1;min-width:130px}
-.tag{font-size:12px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--mut)}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.actions{margin-top:18px;display:flex;gap:10px;align-items:center}
+
+/* ---------- misc ---------- */
+.flash{background:linear-gradient(180deg,#1e2b47,#1a2540);border:1px solid #33507e;
+  border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:14px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.empty{text-align:center;padding:26px 10px;color:var(--faint)}
+.empty .ico{font-size:30px;display:block;margin-bottom:6px}
+@media(max-width:560px){
+  nav{padding:8px 10px;overflow-x:auto}
+  .slot-card{flex-direction:column;text-align:center}
+  .spool-line{justify-content:center}
+}
 </style>
 </head>
 <body>
 <nav>
-  <span class="brand">🧵 Filament Tracker</span>
-  <a href="{{ url_for('dashboard') }}">Dashboard</a>
-  <a href="{{ url_for('spools') }}">Spools</a>
-  <a href="{{ url_for('prints') }}">Prints</a>
-  <a href="{{ url_for('settings') }}">Settings</a>
+  <span class="brand">🧵 Filament<em>Tracker</em></span>
+  {% set path = request.path if request else '' %}
+  <a href="{{ url_for('dashboard') }}" class="{{ 'on' if path == '/' }}">Dashboard</a>
+  <a href="{{ url_for('spools') }}" class="{{ 'on' if '/spools' in path }}">Spools</a>
+  <a href="{{ url_for('prints') }}" class="{{ 'on' if '/prints' in path }}">Prints</a>
+  <a href="{{ url_for('settings') }}" class="{{ 'on' if '/settings' in path }}">Settings</a>
 </nav>
 <main>
 {% with msgs = get_flashed_messages() %}
-  {% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% for m in msgs %}<div class="flash">💬 {{ m }}</div>{% endfor %}
 {% endwith %}
 {% block content %}{% endblock %}
 </main>

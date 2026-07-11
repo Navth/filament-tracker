@@ -2,15 +2,18 @@
 {% block content %}
 <h1>Dashboard</h1>
 
-<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+<div class="card toolbar">
   <div>
     {% if logged_in %}
-      <span class="tag">☁ Bambu Cloud connected</span>
-      {% if last_sync %}<span class="mut"> · last sync {{ last_sync }}</span>{% endif %}
+      <span class="tag ok">☁ Bambu Cloud connected</span>
+      {% if last_sync %}<span class="mut"> · last sync {{ last_sync|localtime }}</span>{% endif %}
     {% else %}
-      <span class="tag">Not connected — <a href="{{ url_for('settings') }}" style="color:var(--acc)">log in</a> to sync prints</span>
+      <span class="tag warn">Not connected — <a href="{{ url_for('settings') }}" style="color:var(--acc)">log in</a> to sync prints</span>
     {% endif %}
-    {% if unassigned %}<span class="mut"> · ⚠ {{ unassigned }} print(s) not assigned to a spool — fix in <a href="{{ url_for('prints') }}" style="color:var(--acc)">Prints</a></span>{% endif %}
+    {% if unassigned %}
+      <div class="mut" style="margin-top:6px">⚠ {{ unassigned }} print(s) aren't assigned to a spool —
+      review them in <a href="{{ url_for('prints') }}" style="color:var(--acc)">Prints</a></div>
+    {% endif %}
   </div>
   <form method="post" action="{{ url_for('sync') }}"><button>⟳ Sync prints</button></form>
 </div>
@@ -20,18 +23,30 @@
   <div class="card">
     <h2>Slot {{ s.slot }}</h2>
     {% if s.spool %}
-      <div>
-        <span class="dot" style="background:{{ s.spool['color'] or '#666' }}"></span>
-        <b>{{ s.spool['material'] }}</b>
-        {% if s.spool['brand'] %} · {{ s.spool['brand'] }}{% endif %}
+    <div class="slot-card">
+      <div class="donut {{ 'low' if s.stats.pct < 10 else 'mid' if s.stats.pct < 25 }}"
+           style="--p:{{ s.stats.pct }};--c:{{ s.spool['color'] or 'var(--acc)' }}">
+        <div class="donut-in"><div><b>{{ s.stats.pct }}%</b><br><span>left</span></div></div>
       </div>
-      <div class="big">{{ s.stats.remaining }} g <span class="mut" style="font-size:14px">left of {{ s.spool['initial_g'] }} g</span></div>
-      <div class="bar"><i class="{{ 'bad' if s.stats.pct < 10 else 'warn' if s.stats.pct < 25 else '' }}" style="width:{{ s.stats.pct }}%"></i></div>
-      <div class="mut">{{ s.stats.used }} g used · {{ s.stats.prints }} print(s) · loaded {{ s.spool['started_at'][:10] if s.spool['started_at'] }}</div>
-      <div style="margin-top:10px"><a class="btn ghost" href="{{ url_for('spool_change', slot=s.slot) }}">Change spool</a></div>
+      <div class="slot-info">
+        <div class="spool-line">
+          <span class="dot" style="background:{{ s.spool['color'] or '#666' }}"></span>
+          <b>{{ s.spool['material'] }}</b>
+          {% if s.spool['brand'] %}<span class="tag">{{ s.spool['brand'] }}</span>{% endif %}
+        </div>
+        <div class="big">{{ s.stats.remaining }} g <small>of {{ s.spool['initial_g']|int }} g</small></div>
+        <div class="mut">{{ s.stats.used }} g used · {{ s.stats.prints }} print{{ 's' if s.stats.prints != 1 }} · loaded {{ (s.spool['started_at'] or '')|localtime }}</div>
+        <div class="actions">
+          <a class="btn ghost" href="{{ url_for('spool_change', slot=s.slot) }}">Change spool</a>
+        </div>
+      </div>
+    </div>
     {% else %}
-      <p class="mut">No spool loaded.</p>
-      <a class="btn" href="{{ url_for('spool_change', slot=s.slot) }}">Load a spool</a>
+    <div class="empty">
+      <span class="ico">🧵</span>
+      No spool loaded
+      <div style="margin-top:12px"><a class="btn" href="{{ url_for('spool_change', slot=s.slot) }}">Load a spool</a></div>
+    </div>
     {% endif %}
   </div>
 {% endfor %}
@@ -40,17 +55,21 @@
 <div class="card">
   <h2>Recent prints</h2>
   {% if recent %}
+  <div class="tbl">
   <table>
     <tr><th>Print</th><th>When</th><th>Grams</th><th>Spool</th></tr>
     {% for p in recent %}
-    <tr {% if not p['counted'] %}style="opacity:.45"{% endif %}>
+    <tr {% if not p['counted'] %}style="opacity:.4"{% endif %}>
       <td>{{ p['title'] }}</td>
       <td class="mut">{{ p['start_time']|localtime }}</td>
-      <td>{{ p['weight'] }} g</td>
-      <td>{% if p['spool_id'] %}<span class="dot" style="background:{{ p['scolor'] or '#666' }}"></span>{{ p['smaterial'] }}{% else %}<span class="mut">—</span>{% endif %}</td>
+      <td class="num">{{ p['weight'] }} g</td>
+      <td>{% if p['spool_id'] %}<span class="dot" style="background:{{ p['scolor'] or '#666' }}"></span> {{ p['smaterial'] }}{% else %}<span class="faint">unassigned</span>{% endif %}</td>
     </tr>
     {% endfor %}
   </table>
-  {% else %}<p class="mut">No prints yet — hit “Sync prints” or add one manually on the Prints page.</p>{% endif %}
+  </div>
+  {% else %}
+  <div class="empty"><span class="ico">🖨️</span>No prints yet — hit “Sync prints” or add one manually on the Prints page.</div>
+  {% endif %}
 </div>
 {% endblock %}

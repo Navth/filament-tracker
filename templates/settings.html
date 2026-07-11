@@ -5,14 +5,16 @@
 <div class="card">
   <h2>Bambu Cloud</h2>
   {% if logged_in %}
-    <p>Connected as <b>{{ email }}</b>.</p>
-    <form method="post" action="{{ url_for('bambu_logout') }}"><button class="ghost">Log out</button></form>
+    <div class="toolbar">
+      <div><span class="tag ok">☁ connected</span> <b>{{ email }}</b></div>
+      <form method="post" action="{{ url_for('bambu_logout') }}"><button class="ghost">Log out</button></form>
+    </div>
   {% else %}
     <form method="post" action="{{ url_for('bambu_login') }}">
       <div class="row">
         <div><label>Email</label><input name="email" type="email" value="{{ email }}" required></div>
         <div><label>Password</label><input name="password" type="password" required></div>
-        <div><label>Region</label>
+        <div style="max-width:140px"><label>Region</label>
           <select name="region"><option value="global">Global</option><option value="china">China</option></select></div>
       </div>
       <p class="mut">Bambu will email you a 6-digit code to finish logging in. Your password is only sent to Bambu's servers, never stored.</p>
@@ -45,7 +47,7 @@
       {% endif %}
     </div>
   </div>
-  <div style="margin-top:14px"><button>Save settings</button></div>
+  <div class="actions"><button>Save settings</button></div>
 </div>
 </form>
 {% endblock %}

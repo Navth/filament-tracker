@@ -8,21 +8,23 @@
     <div class="row">
       <div><label>Name</label><input name="title" placeholder="Benchy"></div>
       <div><label>Filament (g)</label><input name="weight" type="number" step="0.1" required></div>
-      <div><label>Slot</label><input name="slot" type="number" min="1" max="4" value="1"></div>
-      <div style="align-self:end"><button>Add</button></div>
+      <div style="max-width:110px"><label>Slot</label><input name="slot" type="number" min="1" max="4" value="1"></div>
+      <div style="align-self:flex-end;flex:none"><button>+ Add</button></div>
     </div>
   </form>
 </div>
 
 <div class="card">
+{% if prints %}
+<div class="tbl">
 <table>
   <tr><th>Print</th><th>When</th><th>Grams</th><th>Spool</th><th>Counted</th><th>Assign</th></tr>
   {% for p in prints %}
-  <tr {% if not p['counted'] %}style="opacity:.45"{% endif %}>
+  <tr {% if not p['counted'] %}style="opacity:.4"{% endif %}>
     <td>{{ p['title'] }} <span class="tag">{{ p['source'] }}</span></td>
     <td class="mut">{{ p['start_time']|localtime }}</td>
-    <td>{{ p['weight'] }} g</td>
-    <td>{% if p['spool_id'] %}<span class="dot" style="background:{{ p['scolor'] or '#666' }}"></span>{{ p['smaterial'] }} (slot {{ p['sslot'] }}){% else %}<span class="mut">unassigned</span>{% endif %}</td>
+    <td class="num">{{ p['weight'] }} g</td>
+    <td>{% if p['spool_id'] %}<span class="dot" style="background:{{ p['scolor'] or '#666' }}"></span> {{ p['smaterial'] }} <span class="mut">slot {{ p['sslot'] }}</span>{% else %}<span class="faint">unassigned</span>{% endif %}</td>
     <td>
       <form class="inline" method="post" action="{{ url_for('print_toggle', pid=p['id']) }}">
         <button class="mini ghost">{{ '✓ yes' if p['counted'] else '✗ no' }}</button>
@@ -30,11 +32,11 @@
     </td>
     <td>
       <form class="inline" method="post" action="{{ url_for('print_assign', pid=p['id']) }}">
-        <select name="spool_id" style="width:auto;display:inline-block" onchange="this.form.submit()">
+        <select name="spool_id" style="width:auto" onchange="this.form.submit()">
           <option value="">—</option>
           {% for so in spool_opts %}
           <option value="{{ so['id'] }}" {% if p['spool_id']==so['id'] %}selected{% endif %}>
-            #{{ so['id'] }} {{ so['material'] }} slot{{ so['slot'] }}{{ ' (active)' if so['active'] }}
+            #{{ so['id'] }} {{ so['material'] }} · slot {{ so['slot'] }}{{ ' · active' if so['active'] }}
           </option>
           {% endfor %}
         </select>
@@ -43,6 +45,9 @@
   </tr>
   {% endfor %}
 </table>
-{% if not prints %}<p class="mut">Nothing here yet.</p>{% endif %}
+</div>
+{% else %}
+<div class="empty"><span class="ico">🖨️</span>Nothing here yet.</div>
+{% endif %}
 </div>
 {% endblock %}
