@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ 'Change' if current else 'Load' }} spool — slot {{ slot }}</h1>
+
+{% if current %}
+<div class="card">
+  <h2>Current spool (will be archived)</h2>
+  <span class="dot" style="background:{{ current['color'] or '#666' }}"></span>
+  <b>{{ current['material'] }}</b>{% if current['brand'] %} · {{ current['brand'] }}{% endif %}
+  — {{ stats.remaining }} g left of {{ current['initial_g'] }} g ({{ stats.used }} g used, {{ stats.prints }} prints)
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>New spool details</h2>
+  <form method="post">
+    <div class="row">
+      <div><label>Quantity (g)</label><input name="initial_g" type="number" step="1" value="1000" required></div>
+      <div><label>Material / type</label>
+        <select name="material">
+          {% for m in ['PLA','PLA Matte','PLA Silk','PETG','PETG HF','TPU','ABS','ASA','PLA-CF','Other'] %}
+          <option>{{ m }}</option>{% endfor %}
+        </select></div>
+    </div>
+    <div class="row">
+      <div><label>Color</label><input name="color" type="color" value="#22aa55"></div>
+      <div><label>Brand</label><input name="brand" placeholder="Bambu, Sunlu, eSun…"></div>
+    </div>
+    <label>Note (optional)</label><input name="note" placeholder="batch, purchase date…">
+    <div style="margin-top:14px">
+      <button>Load spool & reset counter</button>
+      <a class="btn ghost" href="{{ url_for('dashboard') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

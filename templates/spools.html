@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Spool history</h1>
+<div class="card">
+<table>
+  <tr><th>Spool</th><th>Slot</th><th>Loaded</th><th>Ended</th><th>Used / Total</th><th></th></tr>
+  {% for sp, st in spools %}
+  <tr>
+    <td><span class="dot" style="background:{{ sp['color'] or '#666' }}"></span>
+        <b>{{ sp['material'] }}</b>{% if sp['brand'] %} · {{ sp['brand'] }}{% endif %}
+        {% if sp['active'] %}<span class="tag" style="color:var(--acc)">active</span>{% endif %}
+        {% if sp['note'] %}<div class="mut">{{ sp['note'] }}</div>{% endif %}</td>
+    <td>{{ sp['slot'] }}</td>
+    <td class="mut">{{ (sp['started_at'] or '')[:10] }}</td>
+    <td class="mut">{{ (sp['ended_at'] or '')[:10] or '—' }}</td>
+    <td>{{ st.used }} g / {{ sp['initial_g'] }} g <span class="mut">({{ st.remaining }} g left)</span></td>
+    <td>
+      {% if sp['active'] %}
+      <form class="inline" method="post" action="{{ url_for('spool_adjust', spool_id=sp['id']) }}">
+        <input name="remaining_g" type="number" step="0.1" placeholder="weighed g left" style="width:130px;display:inline-block">
+        <button class="mini ghost" title="Correct remaining after weighing the spool">Correct</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% if not spools %}<p class="mut">No spools yet — load one from the dashboard.</p>{% endif %}
+</div>
+{% endblock %}

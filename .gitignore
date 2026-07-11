@@ -1,0 +1,28 @@
+# --- SECRETS / USER DATA — never commit ---
+# The SQLite DB stores your Bambu Cloud login token and print history
+tracker.db
+tracker.db-journal
+*.db
+*.sqlite*
+# In case anyone adds env-based config later
+.env
+.env.*
+*.token
+.bambu_token
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+build/
+dist/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

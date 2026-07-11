@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filament Tracker</title>
+<style>
+:root{--bg:#12141a;--card:#1c2030;--ink:#e8eaf2;--mut:#8b91a7;--acc:#37c66b;--warn:#e0a63a;--bad:#e05555;--line:#2a2f45}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif}
+nav{display:flex;gap:4px;align-items:center;padding:10px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+nav .brand{font-weight:700;margin-right:16px;color:var(--acc)}
+nav a{color:var(--mut);text-decoration:none;padding:6px 12px;border-radius:8px}
+nav a:hover,nav a.on{color:var(--ink);background:var(--bg)}
+main{max-width:960px;margin:24px auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+h1{font-size:22px;margin:0 0 14px}h2{font-size:17px;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.bar{height:10px;background:var(--bg);border-radius:6px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--acc)}
+.bar i.warn{background:var(--warn)}.bar i.bad{background:var(--bad)}
+.mut{color:var(--mut);font-size:13px}
+.big{font-size:26px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase}
+button,.btn{background:var(--acc);color:#0c1a10;border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;font-size:14px}
+button.ghost,.btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+button.mini{padding:3px 8px;font-size:12px}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;width:100%}
+label{display:block;margin:10px 0 4px;font-size:13px;color:var(--mut)}
+form.inline{display:inline}
+.flash{background:#22314a;border:1px solid #3a537d;border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid var(--line);vertical-align:-1px;margin-right:5px}
+.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1;min-width:130px}
+.tag{font-size:12px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--mut)}
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">🧵 Filament Tracker</span>
+  <a href="{{ url_for('dashboard') }}">Dashboard</a>
+  <a href="{{ url_for('spools') }}">Spools</a>
+  <a href="{{ url_for('prints') }}">Prints</a>
+  <a href="{{ url_for('settings') }}">Settings</a>
+</nav>
+<main>
+{% with msgs = get_flashed_messages() %}
+  {% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}
+{% endwith %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

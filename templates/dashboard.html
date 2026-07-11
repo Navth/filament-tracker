@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+  <div>
+    {% if logged_in %}
+      <span class="tag">☁ Bambu Cloud connected</span>
+      {% if last_sync %}<span class="mut"> · last sync {{ last_sync }}</span>{% endif %}
+    {% else %}
+      <span class="tag">Not connected — <a href="{{ url_for('settings') }}" style="color:var(--acc)">log in</a> to sync prints</span>
+    {% endif %}
+    {% if unassigned %}<span class="mut"> · ⚠ {{ unassigned }} print(s) not assigned to a spool — fix in <a href="{{ url_for('prints') }}" style="color:var(--acc)">Prints</a></span>{% endif %}
+  </div>
+  <form method="post" action="{{ url_for('sync') }}"><button>⟳ Sync prints</button></form>
+</div>
+
+<div class="grid">
+{% for s in slots %}
+  <div class="card">
+    <h2>Slot {{ s.slot }}</h2>
+    {% if s.spool %}
+      <div>
+        <span class="dot" style="background:{{ s.spool['color'] or '#666' }}"></span>
+        <b>{{ s.spool['material'] }}</b>
+        {% if s.spool['brand'] %} · {{ s.spool['brand'] }}{% endif %}
+      </div>
+      <div class="big">{{ s.stats.remaining }} g <span class="mut" style="font-size:14px">left of {{ s.spool['initial_g'] }} g</span></div>
+      <div class="bar"><i class="{{ 'bad' if s.stats.pct < 10 else 'warn' if s.stats.pct < 25 else '' }}" style="width:{{ s.stats.pct }}%"></i></div>
+      <div class="mut">{{ s.stats.used }} g used · {{ s.stats.prints }} print(s) · loaded {{ s.spool['started_at'][:10] if s.spool['started_at'] }}</div>
+      <div style="margin-top:10px"><a class="btn ghost" href="{{ url_for('spool_change', slot=s.slot) }}">Change spool</a></div>
+    {% else %}
+      <p class="mut">No spool loaded.</p>
+      <a class="btn" href="{{ url_for('spool_change', slot=s.slot) }}">Load a spool</a>
+    {% endif %}
+  </div>
+{% endfor %}
+</div>
+
+<div class="card">
+  <h2>Recent prints</h2>
+  {% if recent %}
+  <table>
+    <tr><th>Print</th><th>When</th><th>Grams</th><th>Spool</th></tr>
+    {% for p in recent %}
+    <tr {% if not p['counted'] %}style="opacity:.45"{% endif %}>
+      <td>{{ p['title'] }}</td>
+      <td class="mut">{{ p['start_time']|localtime }}</td>
+      <td>{{ p['weight'] }} g</td>
+      <td>{% if p['spool_id'] %}<span class="dot" style="background:{{ p['scolor'] or '#666' }}"></span>{{ p['smaterial'] }}{% else %}<span class="mut">—</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="mut">No prints yet — hit “Sync prints” or add one manually on the Prints page.</p>{% endif %}
+</div>
+{% endblock %}
