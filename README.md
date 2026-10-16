@@ -149,8 +149,8 @@ supabase/migrations/    schema, RLS policies, functions
 supabase/tests/         database tests
 ```
 
-Version 1 was a single-user Flask + SQLite app; it's in the git history
-(`v1` tag) if you want a local-only version.
+Version 1 was a single-user Flask + SQLite app for local use. It's still in
+the git history at commit `aa39801` if you want a local-only version.
 
 ## License
 
