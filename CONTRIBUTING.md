@@ -1,26 +1,33 @@
 # Contributing
 
-Thanks for your interest! This is a small hobby project — keep it simple.
+Thanks for your interest! This is a small project, so keep changes focused.
 
 ## Setup
 
+See **Run it locally** in the [README](README.md). Then:
+
 ```bash
-pip install -r requirements.txt
-FLASK_DEBUG=1 python app.py    # auto-reload on save
+npm run dev        # http://localhost:3000
+npm test           # unit tests
+npm run lint && npm run typecheck
 ```
 
 ## Guidelines
 
-- Keep the stack minimal: Flask + SQLite + plain Jinja templates. No JS
-  frameworks or build steps, please.
+- All data access goes through `src/lib/data.ts`. Don't query Supabase
+  directly from pages or components.
+- Server Actions must validate their input (zod) and never trust IDs from
+  the client; RLS is the backstop, not the only check.
+- Schema changes go in a new file under `supabase/migrations/`, with tests
+  in `supabase/tests/test_schema.sql`.
+- UI uses shadcn/ui components in `src/components/ui/`.
 - One feature or fix per pull request.
-- Test your change against a real Bambu Cloud account if it touches
-  `bambu_cloud.py` — the API is unofficial and behavior matters more than
-  docs.
-- Never include real tokens, emails, serial numbers, or `tracker.db`
-  contents in code, tests, issues, or screenshots.
+- If you touch `src/lib/bambu/`, test against a real Bambu Cloud account;
+  the API is unofficial and behaviour matters more than docs.
+- Never include real tokens, emails, serial numbers or keys in code, tests,
+  issues or screenshots.
 
 ## Reporting bugs
 
 Use the bug report template. Include your printer model, whether you use
-AMS Lite, and the full error/traceback — with any tokens or emails redacted.
+AMS Lite, and the error message, with any tokens or emails redacted.

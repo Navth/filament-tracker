@@ -1,26 +1,40 @@
-# --- SECRETS / USER DATA — never commit ---
-# The SQLite DB stores your Bambu Cloud login token and print history
-tracker.db
-tracker.db-journal
-*.db
-*.sqlite*
-# In case anyone adds env-based config later
+# --- SECRETS — never commit ---
 .env
 .env.*
+!.env.example
+*.pem
 *.token
-.bambu_token
 
-# --- Python ---
+# --- dependencies ---
+/node_modules
+/.pnp
+.pnp.*
+
+# --- Next.js / build ---
+/.next/
+/out/
+/build
+next-env.d.ts
+*.tsbuildinfo
+
+# --- testing ---
+/coverage
+
+# --- logs ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Supabase CLI local state ---
+supabase/.branches
+supabase/.temp
+
+# --- legacy v1 (Flask) data, in case an old checkout is lying around ---
+tracker.db
+*.sqlite*
 __pycache__/
-*.py[cod]
-*.egg-info/
-.venv/
-venv/
-env/
-build/
-dist/
 
-# --- Editors / OS ---
+# --- editors / OS ---
 .vscode/
 .idea/
 *.swp

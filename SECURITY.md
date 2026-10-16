@@ -2,17 +2,23 @@
 
 ## Model
 
-- The app is designed for **localhost use only** (`127.0.0.1`). It has no
-  authentication of its own — anyone who can reach the port can read your
-  print history and trigger syncs. Do not expose it to the internet or an
-  untrusted LAN without putting an authenticating reverse proxy in front.
-- Your Bambu Cloud **login token is stored in plain text** in the local
-  SQLite database (`tracker.db`). Treat that file like a password. It is
-  git-ignored; never commit or share it.
-- Your Bambu **password is never stored** — it is sent once, directly to
-  Bambu's login endpoint over HTTPS.
-- Never run with `FLASK_DEBUG=1` on a port reachable by other machines —
-  the Werkzeug debugger allows arbitrary code execution.
+- **Authentication** is handled by Supabase Auth. The session lives in
+  HTTP-only cookies, refreshed by `src/proxy.ts`. Pages and server actions
+  verify the user again (`getUser()` in `src/lib/data.ts`) before touching
+  data.
+- **Isolation between users** is enforced by Postgres row-level security
+  on every table, a `security_invoker` view, and `SECURITY INVOKER`
+  functions. The server queries Supabase with the user's own session, never
+  a service-role key. Composite foreign keys prevent rows from referencing
+  another user's spool. See `supabase/tests/test_schema.sql`.
+- **Bambu Cloud tokens** are encrypted with AES-256-GCM before they're
+  stored. The key (`TOKEN_ENC_KEY`) is only in the server environment;
+  keep it in a secret manager. Bambu passwords are sent once to Bambu's
+  login endpoint and never stored.
+- **Bambu API calls happen only on the server**; tokens never reach the
+  browser.
+- **Invite-only mode**: set `ALLOWED_EMAILS`, and for a hard guarantee also
+  disable new sign-ups in Supabase (Authentication → Sign In / Providers).
 
 ## Reporting a vulnerability
 
