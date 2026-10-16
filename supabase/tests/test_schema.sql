@@ -1,4 +1,4 @@
--- Database tests for supabase/migrations/0001_multi_user.sql.
+-- Database tests for supabase/migrations/20261017000000_multi_user.sql.
 -- Run against a scratch Postgres that has tests/supabase_stub.sql and the
 -- migration applied. Any failed check raises an exception (psql exits 3
 -- with ON_ERROR_STOP=1).

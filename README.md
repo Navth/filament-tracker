@@ -35,7 +35,7 @@ Browser ──► Next.js on Cloud Run ──► Supabase Postgres (RLS)
 
 - **Every request runs as the signed-in user.** The server talks to
   Supabase with the user's own session, so Postgres
-  [row-level security](supabase/migrations/0001_multi_user.sql) decides what
+  [row-level security](supabase/migrations/20261017000000_multi_user.sql) decides what
   they can see. A bug in the app can't leak another user's data.
 - **Composite foreign keys** (`spool_id, user_id`) stop a print or
   correction from ever pointing at someone else's spool.
@@ -55,7 +55,7 @@ Browser ──► Next.js on Cloud Run ──► Supabase Postgres (RLS)
 You need Node 22 and a Supabase project (the free tier is fine).
 
 1. In the Supabase dashboard, open **SQL Editor** and run
-   [`supabase/migrations/0001_multi_user.sql`](supabase/migrations/0001_multi_user.sql).
+   [`supabase/migrations/20261017000000_multi_user.sql`](supabase/migrations/20261017000000_multi_user.sql).
 2. Copy `.env.example` to `.env.local` and fill it in:
    ```bash
    node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"  # TOKEN_ENC_KEY
@@ -108,7 +108,7 @@ function as two different users:
 ```bash
 createdb ft_test
 psql -d ft_test -f supabase/tests/supabase_stub.sql
-psql -d ft_test -f supabase/migrations/0001_multi_user.sql
+psql -d ft_test -f supabase/migrations/20261017000000_multi_user.sql
 psql -d ft_test -f supabase/tests/test_schema.sql   # ends with "ALL SQL TESTS PASSED"
 ```
 
