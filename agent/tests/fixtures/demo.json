@@ -1,0 +1,34 @@
+{
+  "_comment": "Demo account used by tests and evals. 'now' pins the clock so date-window answers are stable. Expected remaining grams: #1 507.5, #2 209.7, #3 60, #4 600, #5 0 (archived).",
+  "now": "2026-10-18T12:00:00Z",
+  "settings": { "slot_count": 4, "last_sync": "2026-10-18T09:30:00Z" },
+  "spools": [
+    { "id": 1, "slot": 1, "brand": "Bambu", "material": "PLA", "color": "#000000", "initial_g": 1000, "started_at": "2026-09-01T08:00:00Z", "active": true, "note": "" },
+    { "id": 2, "slot": 2, "brand": "eSun", "material": "PETG", "color": "#FFFFFF", "initial_g": 1000, "started_at": "2026-09-10T10:00:00Z", "active": true, "note": "" },
+    { "id": 3, "slot": 3, "brand": "Generic", "material": "PLA", "color": "#DC1E1E", "initial_g": 1000, "started_at": "2026-08-20T10:00:00Z", "active": true, "note": "" },
+    { "id": 4, "slot": 4, "brand": "Polymaker", "material": "PETG", "color": "#1E5ADC", "initial_g": 750, "started_at": "2026-10-05T10:00:00Z", "active": true, "note": "" },
+    { "id": 5, "slot": 2, "brand": "eSun", "material": "PETG", "color": "#FFFFFF", "initial_g": 1000, "started_at": "2026-07-01T10:00:00Z", "ended_at": "2026-09-10T09:55:00Z", "active": false, "note": "" }
+  ],
+  "prints": [
+    { "id": 1, "task_key": "1001", "title": "Old shelf bracket", "weight": 600, "slot": 2, "spool_id": 5, "counted": true, "source": "cloud", "start_time": "2026-07-15T10:00:00Z" },
+    { "id": 2, "task_key": "1002", "title": "Planter", "weight": 400, "slot": 2, "spool_id": 5, "counted": true, "source": "cloud", "start_time": "2026-08-25T10:00:00Z" },
+    { "id": 3, "task_key": "1003", "title": "Calibration cube", "weight": 33, "slot": 1, "spool_id": null, "counted": true, "source": "cloud", "start_time": "2026-08-28T10:00:00Z" },
+    { "id": 4, "task_key": "1004", "title": "Red dragon", "weight": 400, "slot": 3, "spool_id": 3, "counted": true, "source": "cloud", "start_time": "2026-08-30T10:00:00Z" },
+    { "id": 5, "task_key": "1005", "title": "Desk organiser", "weight": 120, "slot": 1, "spool_id": 1, "counted": true, "source": "cloud", "start_time": "2026-09-05T10:00:00Z" },
+    { "id": 6, "task_key": "1006", "title": "Red vase", "weight": 350, "slot": 3, "spool_id": 3, "counted": true, "source": "cloud", "start_time": "2026-09-12T10:00:00Z" },
+    { "id": 7, "task_key": "1007", "title": "PETG enclosure panel", "weight": 310, "slot": 2, "spool_id": 2, "counted": true, "source": "cloud", "start_time": "2026-09-15T10:00:00Z" },
+    { "id": 8, "task_key": "1008", "title": "Cable clips x20", "weight": 85.5, "slot": 1, "spool_id": 1, "counted": true, "source": "cloud", "start_time": "2026-09-20T10:00:00Z" },
+    { "id": 9, "task_key": "1009", "title": "Failed bed adhesion", "weight": 60, "slot": 2, "spool_id": 2, "counted": false, "source": "cloud", "start_time": "2026-09-22T10:00:00Z" },
+    { "id": 10, "task_key": "1010", "title": "Spool holder", "weight": 180, "slot": 2, "spool_id": 2, "counted": true, "source": "cloud", "start_time": "2026-09-25T10:00:00Z" },
+    { "id": 11, "task_key": "1011", "title": "Red phone stand", "weight": 190, "slot": 3, "spool_id": 3, "counted": true, "source": "cloud", "start_time": "2026-09-28T10:00:00Z" },
+    { "id": 12, "task_key": "1012", "title": "Headphone hook", "weight": 42, "slot": 1, "spool_id": 1, "counted": true, "source": "cloud", "start_time": "2026-10-02T10:00:00Z" },
+    { "id": 13, "task_key": "1013", "title": "Water bottle cage", "weight": 95, "slot": 2, "spool_id": 2, "counted": true, "source": "cloud", "start_time": "2026-10-06T10:00:00Z" },
+    { "id": 14, "task_key": "1014", "title": "Blue drawer handles", "weight": 48, "slot": 4, "spool_id": 4, "counted": true, "source": "cloud", "start_time": "2026-10-08T10:00:00Z" },
+    { "id": 15, "task_key": "1015", "title": "Monitor riser", "weight": 230, "slot": 1, "spool_id": 1, "counted": true, "source": "cloud", "start_time": "2026-10-12T10:00:00Z" },
+    { "id": 16, "task_key": "1016", "title": "Bike mount", "weight": 205.3, "slot": 2, "spool_id": 2, "counted": true, "source": "cloud", "start_time": "2026-10-14T10:00:00Z" },
+    { "id": 17, "task_key": "1017", "title": "Blue tool tray", "weight": 102, "slot": 4, "spool_id": 4, "counted": true, "source": "cloud", "start_time": "2026-10-16T10:00:00Z" }
+  ],
+  "adjustments": [
+    { "spool_id": 1, "grams": 15, "note": "weighed after purge", "created_at": "2026-10-13T10:00:00Z" }
+  ]
+}
