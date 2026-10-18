@@ -1,0 +1,45 @@
+# Firebase App Hosting configuration.
+# https://firebase.google.com/docs/app-hosting/configure
+#
+# Values come from Cloud Secret Manager so nothing project-specific is
+# committed. Create them once with:
+#   firebase apphosting:secrets:set supabase-url
+#   firebase apphosting:secrets:set supabase-publishable-key
+#   firebase apphosting:secrets:set token-enc-key
+# (each command also grants your backend access to the secret)
+
+runConfig:
+  minInstances: 0
+  maxInstances: 2
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  - variable: SUPABASE_URL
+    secret: supabase-url
+    availability:
+      - RUNTIME
+
+  - variable: SUPABASE_PUBLISHABLE_KEY
+    secret: supabase-publishable-key
+    availability:
+      - RUNTIME
+
+  # 32 random bytes, base64. Changing it means every user reconnects Bambu.
+  - variable: TOKEN_ENC_KEY
+    secret: token-enc-key
+    availability:
+      - RUNTIME
+
+  # Optional: comma-separated emails allowed to sign in. Uncomment to enable.
+  # - variable: ALLOWED_EMAILS
+  #   value: you@example.com
+  #   availability:
+  #     - RUNTIME
+
+  # Optional: public URL used in sign-up emails, e.g. once you add a domain.
+  # - variable: SITE_URL
+  #   value: https://your-domain.com
+  #   availability:
+  #     - RUNTIME

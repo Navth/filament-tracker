@@ -40,3 +40,6 @@ __pycache__/
 *.swp
 .DS_Store
 Thumbs.db
+
+# --- v1 import output (personal data) ---
+*.local.sql

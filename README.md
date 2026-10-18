@@ -5,12 +5,12 @@ by syncing your print history (grams per print) from Bambu Cloud.
 
 **Stack:** Next.js 16 (App Router, Server Actions) · TypeScript · shadcn/ui ·
 Tailwind CSS 4 · Supabase (Auth + Postgres with row-level security) ·
-Google Cloud Run
+Firebase App Hosting
 
-> **Coming next:** an AI print-ops agent on top of this data: an MCP server
-> exposing your spools and prints as tools, an agent that answers questions
-> like *"do I have enough PETG for this 180 g job?"*, and an eval suite that
-> measures how often it's right.
+> **AI chat-ops agent:** [`agent/`](agent/) adds an assistant you can ask
+> things like *"do I have enough PETG for this 180 g job?"*. It's built with Gemini or Claude,
+> LangGraph and an MCP server over your spools and prints, asks for approval before
+> any change, and comes with an eval suite that measures how often it's right.
 
 ## Features
 
@@ -27,7 +27,7 @@ Google Cloud Run
 ## Architecture
 
 ```
-Browser ──► Next.js on Cloud Run ──► Supabase Postgres (RLS)
+Browser ──► Next.js on Firebase App Hosting ──► Supabase Postgres (RLS)
              │  Server Components read data
              │  Server Actions write data
              └─► Bambu Cloud API (server-side only)
@@ -44,7 +44,7 @@ Browser ──► Next.js on Cloud Run ──► Supabase Postgres (RLS)
   `security_invoker` view (`spool_stats`), so it's atomic and still
   RLS-checked.
 - **Bambu tokens are encrypted at rest** with AES-256-GCM. The key lives
-  only in the server's environment (Secret Manager on Cloud Run). Bambu
+  only in the server's environment (Cloud Secret Manager). Bambu
   passwords are never stored.
 - **One data access layer** ([`src/lib/data.ts`](src/lib/data.ts)) handles
   every read and write and verifies the user first. The AI agent's tools
@@ -68,30 +68,41 @@ You need Node 22 and a Supabase project (the free tier is fine).
    npm run dev
    ```
 
-## Deploy to Google Cloud Run
+## Deploy to Firebase App Hosting
 
-```bash
-PROJECT=your-gcp-project REGION=asia-south1
+App Hosting builds and runs the Next.js server for you and redeploys on
+every push to your live branch. It needs the Blaze (pay-as-you-go) plan;
+a small app like this normally stays within the free usage tier.
+Config lives in [`apphosting.yaml`](apphosting.yaml).
 
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
-  artifactregistry.googleapis.com secretmanager.googleapis.com --project $PROJECT
+1. Push this repo to GitHub.
+2. Create a Firebase project (or use an existing GCP one) and upgrade it
+   to Blaze.
+3. Install the CLI and create the secrets the app reads at runtime:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   firebase use --add            # pick your project
+   firebase apphosting:secrets:set supabase-url
+   firebase apphosting:secrets:set supabase-publishable-key
+   firebase apphosting:secrets:set token-enc-key
+   ```
+   For `token-enc-key`, paste the output of
+   `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`.
+4. In the Firebase console, open **Build → App Hosting → Create backend**,
+   connect the GitHub repo, set the root directory to `/` and the live
+   branch to `main`. Pick a region close to you (e.g. `asia-southeast1`).
+   If the secrets prompt asks, grant the new backend access to all three.
+5. When the first rollout finishes, copy the `*.hosted.app` URL. In
+   Supabase, open **Authentication → URL Configuration**, set **Site URL**
+   to it and add `https://<your-url>/auth/callback` to the redirect URLs.
 
-# Store the encryption key as a secret
-node -e "process.stdout.write(require('crypto').randomBytes(32).toString('base64'))" |
-  gcloud secrets create token-enc-key --data-file=- --project $PROJECT
-gcloud secrets add-iam-policy-binding token-enc-key --project $PROJECT \
-  --member="serviceAccount:$(gcloud projects describe $PROJECT --format='value(projectNumber)')-compute@developer.gserviceaccount.com" \
-  --role=roles/secretmanager.secretAccessor
+**Custom domain later:** App Hosting → your backend → **Settings → Domains
+→ Add custom domain**, add the DNS records it shows, then update the
+Supabase Site URL and redirect URL (and `SITE_URL` in `apphosting.yaml`).
 
-# Build from source and deploy
-gcloud run deploy filament-tracker --source . --project $PROJECT --region $REGION \
-  --allow-unauthenticated --min-instances 0 --max-instances 2 \
-  --set-env-vars SUPABASE_URL=https://<ref>.supabase.co,SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxx \
-  --set-secrets TOKEN_ENC_KEY=token-enc-key:latest
-```
-
-Then add `https://<your-service-url>/auth/callback` to Supabase's redirect
-URLs and set the **Site URL** to your service URL.
+The [`Dockerfile`](Dockerfile) still works for Cloud Run or any other
+container host if you'd rather not use App Hosting.
 
 ## Tests
 
