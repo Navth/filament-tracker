@@ -44,9 +44,9 @@ env:
   #   availability:
   #     - RUNTIME
 
-  # Optional: URL of the chat agent service on Cloud Run (see README,
-  # "Deploy the chat agent"). Without it the Chat page says it isn't set up.
-  # - variable: AGENT_URL
-  #   value: https://filament-agent-xxxxxxxxxx.asia-southeast1.run.app
-  #   availability:
-  #     - RUNTIME
+  # URL of the chat agent service on Cloud Run (see README, "Deploy the chat
+  # agent"). Without it the Chat page says it isn't set up.
+  - variable: AGENT_URL
+    value: https://filament-agent-837028967879.asia-southeast1.run.app
+    availability:
+      - RUNTIME
