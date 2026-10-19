@@ -67,6 +67,15 @@ You need Node 22 and a Supabase project (the free tier is fine).
    npm install
    npm run dev
    ```
+5. Optional, the **Chat** page: start the agent service on demo data
+   (setup in [`agent/README.md`](agent/README.md#run-it)) and point the app at it.
+   Add `AGENT_URL=http://127.0.0.1:8000` to `.env.local`, then:
+   ```bash
+   cd agent
+   ft-agent serve --demo
+   ```
+   Drop `--demo` to chat about your real spools (the agent then needs the same
+   `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` in `agent/.env`).
 
 ## Deploy to Firebase App Hosting
 
@@ -103,6 +112,42 @@ Supabase Site URL and redirect URL (and `SITE_URL` in `apphosting.yaml`).
 
 The [`Dockerfile`](Dockerfile) still works for Cloud Run or any other
 container host if you'd rather not use App Hosting.
+
+## Deploy the chat agent (Cloud Run)
+
+The `/chat` page talks to the Python agent in [`agent/`](agent/), which runs as
+its own Cloud Run service. It checks each request's Supabase access token and
+works with that token, so it sees only the caller's data. Skip this section if
+you don't want the chat; the page then says it isn't set up.
+
+1. Create a Postgres database for conversation state. Supabase's own database
+   works: copy the **session pooler** (or direct) connection string from
+   **Connect** in the dashboard. The agent keeps its tables in a separate
+   `agent` schema that the Supabase API doesn't expose.
+2. Store the secrets (same project as App Hosting, so the Supabase secrets
+   from above can be reused):
+   ```bash
+   gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+   printf %s "YOUR_GEMINI_KEY" | gcloud secrets create gemini-api-key --data-file=-
+   printf %s "postgresql://..." | gcloud secrets create agent-database-url --data-file=-
+   ```
+   Give the Cloud Run runtime service account (by default
+   `PROJECT_NUMBER-compute@developer.gserviceaccount.com`) the **Secret
+   Manager Secret Accessor** role on these secrets and on `supabase-url` and
+   `supabase-publishable-key`.
+3. Build and deploy from [`agent/Dockerfile`](agent/Dockerfile):
+   ```bash
+   gcloud run deploy filament-agent --source agent --region asia-southeast1 \
+     --allow-unauthenticated --max-instances 2 --timeout 300 \
+     --set-secrets SUPABASE_URL=supabase-url:latest,SUPABASE_PUBLISHABLE_KEY=supabase-publishable-key:latest,GEMINI_API_KEY=gemini-api-key:latest,FT_AGENT_DATABASE_URL=agent-database-url:latest
+   ```
+   `--allow-unauthenticated` only opens the URL; every chat request still
+   needs a valid Supabase session. To use Claude instead of Gemini, store
+   `ANTHROPIC_API_KEY` and add `--set-env-vars FT_AGENT_PROVIDER=claude`. If
+   you use `ALLOWED_EMAILS` in the app, set the same value here.
+4. Copy the service URL that the deploy prints. Set it as `AGENT_URL` in
+   [`apphosting.yaml`](apphosting.yaml) (uncomment the block), then push to
+   roll out the web app.
 
 ## Tests
 
@@ -149,15 +194,17 @@ remaining = spool grams − Σ(counted prints) − Σ(corrections)
 
 ```
 src/app/(auth)/         login, sign-up, auth actions
-src/app/(app)/          dashboard, spools, prints, settings + server actions
+src/app/(app)/          dashboard, spools, prints, chat, settings + server actions
 src/app/auth/callback/  email confirmation handler
 src/lib/data.ts         data access layer (all reads/writes, user-checked)
+src/lib/agent.ts        client for the chat agent service (forwards the user's session)
 src/lib/bambu/          Bambu Cloud client and task → row mapping
 src/lib/crypto.ts       AES-256-GCM token encryption
 src/proxy.ts            session refresh + sign-in redirect
 src/components/ui/      shadcn/ui components
 supabase/migrations/    schema, RLS policies, functions
 supabase/tests/         database tests
+agent/                  Python chat agent + its HTTP API and Dockerfile
 ```
 
 Version 1 was a single-user Flask + SQLite app for local use. It's still in

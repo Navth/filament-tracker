@@ -13,10 +13,14 @@ dependencies = [
     "langgraph-checkpoint-sqlite>=3.1",
     "pydantic>=2.10",
     "httpx>=0.28",
+    "starlette>=0.46",
+    "uvicorn>=0.34",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=9", "pytest-asyncio>=1.4"]
+# Postgres checkpoints for `ft-agent serve` (set FT_AGENT_DATABASE_URL)
+postgres = ["langgraph-checkpoint-postgres>=3.1", "psycopg[binary]>=3.2", "psycopg-pool>=3.2"]
 
 [project.scripts]
 ft-agent = "filament_agent.cli:main"

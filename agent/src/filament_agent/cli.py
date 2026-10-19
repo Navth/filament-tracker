@@ -1,4 +1,4 @@
-"""Command line: ft-agent login | logout | chat | ask."""
+"""Command line: ft-agent login | logout | chat | ask | serve."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import argparse
 import asyncio
 import getpass
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -91,7 +92,20 @@ def main(argv: list[str] | None = None) -> None:
         sp.add_argument("-v", "--verbose", action="store_true", help="show tool calls and token usage")
         if name == "ask":
             sp.add_argument("question", nargs="+")
+    sp = sub.add_parser("serve", help="HTTP API for the web app's /chat page")
+    sp.add_argument("--demo", action="store_true", help="serve the built-in demo data instead of real accounts")
+    sp.add_argument("--host", default="127.0.0.1")
+    sp.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))
     args = p.parse_args(argv)
+
+    if args.command == "serve":
+        from .server import serve
+
+        try:
+            serve(args.demo, args.host, args.port)
+        except RuntimeError as e:
+            sys.exit(str(e))
+        return
 
     if args.command == "login":
         from .auth import login

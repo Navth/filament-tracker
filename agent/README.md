@@ -99,6 +99,40 @@ ft-agent chat
 
 Conversations are kept per `--thread` in `~/.filament-agent/`.
 
+## Web API (`ft-agent serve`)
+
+The web app's `/chat` page talks to the agent over HTTP
+([`server.py`](src/filament_agent/server.py)):
+
+| Endpoint | Body | Returns |
+|---|---|---|
+| `POST /chat` | `{thread_id, message}` | `{status: "answered" \| "needs_approval", answer, approval, ...}` |
+| `POST /chat/approve` | `{thread_id, decisions}` (`true`/`false`, or `{action_id: bool}`) | same as `/chat` |
+| `GET /chat/{thread_id}` | | recent turns and any pending approval |
+| `GET /healthz` | | `{ok: true}` |
+
+Every `/chat` request needs `Authorization: Bearer <Supabase access token>`. The
+server checks the token with Supabase Auth, then runs the agent with that same
+token, so RLS applies. The user id is never taken from the request: threads are
+stored under `<verified user id>:<thread_id>`, so users can't open each other's
+threads. `ALLOWED_EMAILS` (same as the web app) limits who can use it.
+
+```bash
+ft-agent serve --demo          # demo data, http://127.0.0.1:8000
+ft-agent serve --port 8080     # real accounts (needs SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY)
+```
+
+With `--demo` each signed-in user gets their own in-memory copy of the demo data.
+If `SUPABASE_URL` isn't set, `--demo` accepts any bearer token (demo data only).
+
+Threads are checkpointed to SQLite in `~/.filament-agent/` by default. On Cloud Run,
+where each instance has its own short-lived disk, set `FT_AGENT_DATABASE_URL` to a
+Postgres connection string (`pip install -e ".[postgres]"`). Checkpoints go in their
+own `agent` schema (`FT_AGENT_DB_SCHEMA`), which PostgREST doesn't expose. With
+Supabase's database, use the direct or **session** pooler connection string, not the
+transaction pooler. [`Dockerfile`](Dockerfile) builds the Cloud Run image; deploy
+steps are in the [main README](../README.md#deploy-the-chat-agent-cloud-run).
+
 ## Evals
 
 [`evals/cases.jsonl`](evals/cases.jsonl) has 25 cases: lookups, feasibility
@@ -134,10 +168,11 @@ in `evals/results/<timestamp>/` with a `summary.md`.
 pytest
 ```
 
-47 tests, no API calls. A scripted fake model drives the graph through tool use,
+55 tests, no API calls. A scripted fake model drives the graph through tool use,
 approve/decline, verifier rejections, nudges, step limits, refusals and history
-compaction. There are also tests for the data math, the MCP tools, and the grader
-itself: correct answers pass, wrong ones fail, and the null baseline scores near zero.
+compaction. There are also tests for the data math, the MCP tools, the HTTP API
+(token checks, approvals, per-user thread isolation), and the grader itself:
+correct answers pass, wrong ones fail, and the null baseline scores near zero.
 
 ## Layout
 
@@ -152,6 +187,7 @@ src/filament_agent/
   gemini_llm.py   Gemini client (function calling, thought signatures, rate limit)
   models.py       Pydantic contracts, including AgentAnswer
   evals.py        eval runner and graders
+  server.py       HTTP API for the web app (Supabase token auth, per-user threads)
   cli.py, auth.py command line and Supabase sign-in
 evals/cases.jsonl eval cases
 tests/            pytest suite and demo fixture
