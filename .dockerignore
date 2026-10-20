@@ -10,3 +10,5 @@ supabase/.branches
 *.md
 Dockerfile
 .dockerignore
+# The Python agent has its own image (agent/Dockerfile)
+agent

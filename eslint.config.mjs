@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Not part of the web app: Python agent, Claude worktrees, old Python venvs.
+    "agent/**",
+    ".claude/**",
+    "venv/**",
+    ".venv/**",
   ]),
 ]);
 

@@ -38,6 +38,10 @@ export const env = {
   get tokenEncKey() {
     return required("TOKEN_ENC_KEY");
   },
+  /** Base URL of the agent service (agent/, `ft-agent serve`). Unset hides the chat. */
+  get agentUrl(): string | undefined {
+    return read("AGENT_URL")?.replace(/\/+$/, "");
+  },
   /** Optional comma-separated allowlist of emails that may use the app. */
   get allowedEmails(): string[] {
     return (read("ALLOWED_EMAILS") ?? "")
