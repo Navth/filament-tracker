@@ -171,7 +171,9 @@ def from_response(resp: types.GenerateContentResponse, model: str) -> LLMRespons
 
 @dataclass
 class GeminiLLM:
-    model: str = os.environ.get("FT_GEMINI_MODEL", "gemini-flash-latest")
+    # Not "gemini-flash-latest": on the free tier that alias (gemini-3.8-flash) took ~150 s
+    # per call in Oct 2026, versus ~2 s for gemini-3.5-flash.
+    model: str = os.environ.get("FT_GEMINI_MODEL", "gemini-3.5-flash")
     thinking_level: str | None = os.environ.get("FT_GEMINI_THINKING") or None  # minimal|low|medium|high
     max_output_tokens: int = int(os.environ.get("FT_AGENT_MAX_TOKENS", "16000"))
     rpm: float = float(os.environ.get("FT_GEMINI_RPM", "8"))

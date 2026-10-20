@@ -1093,7 +1093,7 @@ format. Switch with `FT_AGENT_PROVIDER=gemini|claude`. Tests inject a
 ### 13.2 Gemini adapter (default)
 
 - Uses Google's **Gen AI SDK** with **function calling**.
-- Default model `gemini-flash-latest`; optional **thinking level**
+- Default model `gemini-3.5-flash`; optional **thinking level**
   (`minimal|low|medium|high`).
 - Gemini returns **thought signatures** that must be sent back on later
   function-calling turns. The adapter stores Gemini's raw parts in an extra

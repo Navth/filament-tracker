@@ -155,7 +155,7 @@ Each run uses a fresh copy of the demo data and scores separate checks:
 | `end_state` | spool weights after the turn (writes really happened, or really didn't) |
 | `approval` | an approval was requested if and only if the user asked for a change |
 | `actions` | `actions_taken` matches what happened |
-| `judge` | the answer text against a per-case rubric, graded by a different model from the one under test (`gemini-flash-lite-latest` or `claude-sonnet-5-5`) |
+| `judge` | the answer text against a per-case rubric, graded by a different model from the one under test (`gemini-3.5-flash-lite` or `claude-sonnet-5-5`) |
 
 A case passes only if all its checks pass. API errors and timeouts go to
 `errors.jsonl` and aren't scored. A row served by a different model than configured

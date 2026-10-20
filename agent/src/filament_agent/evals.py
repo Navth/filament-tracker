@@ -47,7 +47,7 @@ RESULTS = ROOT / "evals" / "results"
 
 # The judge is deliberately a different model from the one under test.
 CLAUDE_JUDGE = "claude-sonnet-5-5"
-GEMINI_JUDGE = os.environ.get("FT_JUDGE_MODEL", "gemini-flash-lite-latest")
+GEMINI_JUDGE = os.environ.get("FT_JUDGE_MODEL", "gemini-3.5-flash-lite")
 # $ per million tokens: input, output, cache read (Claude API list prices)
 PRICES = {"claude-opus-5-5": (4.0, 20.0, 0.20), "claude-sonnet-5-5": (2.0, 10.0, 0.20)}
 CASE_TIMEOUT_S = 240
@@ -255,8 +255,9 @@ async def run_case(case, rep, args) -> dict[str, Any]:
 
     served = sorted({m for t in turns for m in t.served_models})
     # A refusal fallback or reroute would mean the row doesn't measure the configured model.
-    # "-latest" aliases resolve to a dated model, so for those we only record what served it.
-    if args.baseline != "null" and not expected_model.endswith("-latest"):
+    # Gemini model names are aliases (gemini-3.5-flash is served by gemini-3.6-flash), so for
+    # Gemini we only record what served each row.
+    if args.baseline != "null" and cfg.provider == "claude":
         if any(not m.startswith(expected_model) for m in served):
             raise RuntimeError(f"served by {served}, expected {expected_model}")
 
